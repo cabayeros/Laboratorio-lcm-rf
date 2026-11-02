@@ -31,9 +31,9 @@ Consulta realizada el 28/10/2026 a https://portales-pru.tecnologiatransaccional.
 
 Las respuestas de referencia se guardaron en `../lcm-documentacion/migration-reference/` y la portada consultada en `../lcm-documentacion/referencia-live.html`. La copia HTTrack no contiene código fuente PHP: descargar una página no recupera lógica de servidor. Los errores 404/500 de la descarga original están en `../lcm-documentacion/hts-log.txt`.
 
-## Temas y accesibilidad
+## Apariencia y accesibilidad
 
-Botón claro/oscuro en la cabecera; preferencia persistida en localStorage, con preferencia del sistema en la primera visita. Paletas específicas para texto, fondos, enlaces, bordes y campos. Se conserva el color de los recursos originales. Menú móvil, foco visible, etiquetas de formularios y pausa del carrusel; la reproducción automática respeta movimiento reducido. No implica garantía médica de protección ocular.
+La aplicación utiliza una paleta clara fija y conserva el color de los recursos originales. Incluye menú móvil, foco visible, etiquetas de formularios y pausa del carrusel; la reproducción automática respeta movimiento reducido. No implica garantía médica de protección ocular.
 
 ## Para completar la migración funcional
 
@@ -47,4 +47,4 @@ Sube únicamente el contenido de esta carpeta como raíz del repositorio GitHub.
 
 ## Diseño de la aplicación
 
-El proyecto integra el diseño de lcm-amigos-2: ancho completo, navegación lateral en escritorio, menú desplegable en tabletas y móviles, formularios adaptables y temas claro y oscuro. Angular compila, en este orden, src/styles.css (base), src/amigos.css (componentes y paletas) y src/amigos-2.css (distribución final). Para modificar el diseño actual, edita principalmente src/amigos-2.css. Todos los estilos y recursos están dentro del repositorio; no se requiere ninguna carpeta hermana para compilar o ejecutar.
+El proyecto integra el diseño de lcm-amigos-2: ancho completo, cinta de navegación superior en escritorio e iconos de acceso directo siempre visibles en tabletas y móviles, además de formularios adaptables y una paleta clara fija. Angular compila, en este orden, src/styles.css (base), src/amigos.css (componentes y paleta) y src/amigos-2.css (distribución final). Para modificar el diseño actual, edita principalmente src/amigos-2.css. Todos los estilos y recursos están dentro del repositorio; no se requiere ninguna carpeta hermana para compilar o ejecutar.
