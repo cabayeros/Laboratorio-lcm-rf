@@ -13,23 +13,23 @@ npm.cmd test
 npm.cmd run serve
 ```
 
-Abrir http://localhost:3000. Para desarrollar, mantener el servidor Node en una terminal y ejecutar `npm.cmd start` en otra (http://localhost:4200, API mediante proxy). En PowerShell se usa npm.cmd para evitar la restricción de ejecución de npm.ps1. `PORT` permite cambiar el puerto de Node.
+Abre http://localhost:3000. Para desarrollar, mantén el servidor Node en una terminal y ejecuta `npm.cmd start` en otra (http://localhost:4200, con la API mediante proxy). En PowerShell se usa npm.cmd para evitar la restricción de ejecución de npm.ps1. `PORT` permite cambiar el puerto de Node.
 
 ## Alcance y comparación con la web original
 
-Consulta realizada el 28/10/2026 a https://portales-pru.tecnologiatransaccional.com/DEBITO/LEALTAD/HN_LCM_RF/ mediante solicitudes HTTP de lectura, incluidas las peticiones POST de navegación que usa el sitio original. No se enviaron registros ni credenciales al servidor original.
+Se consultó el sitio original el 28/10/2026 mediante solicitudes HTTP, incluidas las peticiones POST utilizadas para navegar. No se enviaron registros ni credenciales al servidor original.
 
 | Sección | Archivos iniciales | Resultado y migración |
 |---|---|---|
-| Inicio | index.html y cuatro banners | Conservados logo, fuente, imágenes, menú, pie y carrusel; controles Angular y pausa accesible |
-| Acerca de | Faltaba | Recuperado acerca.php y sus imágenes; contenido trasladado a componente |
-| Reglamento | Faltaba | Recuperado politicas.php, imágenes y PDF; enlace local funcional |
-| Catálogos | Faltaba | catalogo.php devuelve HTTP 200 pero HTML truncado después de la portada. Portada recuperada; faltan páginas y datos de premios |
-| Mi Cuenta | cuenta.html | Formulario conservado. Faltan código PHP, usuarios, sesiones y base de datos; API Node devuelve 503 explícito |
-| Registrarse | Faltaba | contacto.php devuelve HTTP 200 pero termina dentro de la lista de departamentos. Campos visibles migrados; envío desactivado y aviso de indisponibilidad |
-| Cuenta autenticada | Solo referencias en inbox.js | Perfil, movimientos, cambio de contraseña, establecimientos y premios pendientes: no hay código ni acceso autenticado disponible |
+| Inicio | index.html y cuatro banners | Se conservaron el logotipo, la tipografía, las imágenes, el menú, el pie de página y el carrusel; se añadieron controles de Angular y una opción de pausa accesible |
+| Acerca de | Faltaba | Se recuperaron acerca.php y sus imágenes; el contenido se trasladó a un componente |
+| Reglamento | Faltaba | Se recuperaron politicas.php, las imágenes y el PDF; el enlace local funciona |
+| Catálogos | Faltaba | catalogo.php devuelve HTTP 200, pero el HTML está truncado después de la portada. Se recuperó la portada; faltan las páginas y los datos de premios |
+| Mi cuenta | cuenta.html | Se conservó el formulario. Faltan el código PHP, los usuarios, las sesiones y la base de datos; la API de Node devuelve HTTP 503 explícitamente |
+| Registrarse | Faltaba | contacto.php devuelve HTTP 200, pero el contenido termina en la lista de departamentos. Se migraron los campos visibles; el envío está desactivado y se muestra un aviso de indisponibilidad |
+| Cuenta autenticada | Solo hay referencias en inbox.js | No se dispone del código ni de acceso autenticado; quedan pendientes el perfil, los movimientos, el cambio de contraseña, los establecimientos y los premios |
 
-Las respuestas de referencia se guardaron en `../lcm-documentacion/migration-reference/` y la portada consultada en `../lcm-documentacion/referencia-live.html`. La copia HTTrack no contiene código fuente PHP: descargar una página no recupera lógica de servidor. Los errores 404/500 de la descarga original están en `../lcm-documentacion/hts-log.txt`.
+Las respuestas de referencia se guardaron en `../lcm-documentacion/migration-reference/` y la portada consultada, en `../lcm-documentacion/referencia-live.html`. La copia de HTTrack no contiene código fuente PHP: descargar una página no recupera la lógica del servidor. Los errores 404/500 de la descarga original están en `../lcm-documentacion/hts-log.txt`.
 
 ## Apariencia y accesibilidad
 
@@ -37,14 +37,14 @@ La aplicación utiliza una paleta clara fija y conserva el color de los recursos
 
 ## Para completar la migración funcional
 
-Se necesitan las fuentes PHP originales (incluidos display/, paginascuenta/ y registro), esquema y acceso de prueba a la base de datos, reglas de puntos/premios y una cuenta de prueba autorizada. Con eso se puede implementar autenticación con sesiones seguras, registro, departamentos/municipios, perfil, movimientos y canjes en Node. No se crearon usuarios ficticios ni se almacenan contraseñas. La API actual es una base explícitamente incompleta, no un sistema de cuentas listo para producción.
+Se necesitan los archivos fuente originales de PHP (incluidos los directorios display/, paginascuenta/ y registro), el esquema y un acceso de prueba a la base de datos, las reglas de puntos y premios, y una cuenta de prueba autorizada. Con esa información se pueden implementar la autenticación con sesiones seguras, el registro, la gestión de departamentos y municipios, el perfil, los movimientos y los canjes en Node. No se han creado usuarios ficticios ni se almacenan contraseñas. La API actual es una implementación explícitamente incompleta, no un sistema de cuentas listo para producción.
 
-No se publicó ni se modificó el servidor original. El servidor local escucha solo en loopback. Para hospedar en una subruta se debe configurar `baseHref`, rutas de assets, proxy y reescritura SPA. El contenido y las imágenes originales se conservan con el diseño de lcm-amigos-2. Queda pendiente la comparación de capturas en navegador y de las pantallas privadas.
+No se publicó ni se modificó el servidor original. El servidor local escucha solo en loopback. Para alojar la aplicación en una subruta, se deben configurar `baseHref`, las rutas de los recursos estáticos, el proxy y la reescritura SPA. El contenido y las imágenes originales se conservan con el diseño de lcm-amigos-2. Queda pendiente comparar capturas en el navegador y revisar las pantallas privadas.
 
 ## Repositorio y mantenimiento
 
-Sube únicamente el contenido de esta carpeta como raíz del repositorio GitHub. Incluye src, public, server, scripts, los archivos de configuración y package-lock.json. El .gitignore excluye dependencias y archivos generados. La aplicación no depende de lcm-amigos ni de lcm-documentacion. La copia para Live Server se genera opcionalmente con node scripts/prepare-preview.mjs después de compilar; no forma parte del repositorio.
+Sube únicamente el contenido de esta carpeta como raíz del repositorio de GitHub. Incluye las carpetas src, public y server, los archivos de configuración y package-lock.json. El archivo .gitignore excluye las dependencias y los archivos generados. La aplicación no depende de lcm-amigos ni de lcm-documentacion. `npm run build` compila la aplicación con Angular 22 y deja los archivos listos para desplegar en `dist/lcm/browser`.
 
 ## Diseño de la aplicación
 
-El proyecto integra el diseño de lcm-amigos-2: ancho completo, cinta de navegación superior en escritorio e iconos de acceso directo siempre visibles en tabletas y móviles, además de formularios adaptables y una paleta clara fija. Angular compila, en este orden, src/styles.css (base), src/amigos.css (componentes y paleta) y src/amigos-2.css (distribución final). Para modificar el diseño actual, edita principalmente src/amigos-2.css. Todos los estilos y recursos están dentro del repositorio; no se requiere ninguna carpeta hermana para compilar o ejecutar.
+El proyecto integra el diseño de lcm-amigos-2: ancho completo, cinta de navegación superior en escritorio e íconos de acceso directo siempre visibles en tabletas y móviles, además de formularios adaptables y una paleta clara fija. Angular compila, en este orden, src/styles.css (base), src/amigos.css (componentes y paleta) y src/amigos-2.css (distribución final). Para modificar el diseño actual, edita principalmente src/amigos-2.css. Todos los estilos y recursos están dentro del repositorio; no se requiere ninguna carpeta hermana para compilar o ejecutar.

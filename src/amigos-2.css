@@ -15,6 +15,12 @@ html {
   --notice-bg: #edf5fa;
   --panel: #164c62;
   --top: #113e52;
+  --brand-red: #b5121b;
+  --brand-navy: #11123f;
+  --brand-teal: #218b7b;
+  --brand-red-wash: #fff5f4;
+  --brand-teal-wash: #eff8f5;
+  --brand-navy-wash: #f3f4fa;
   --shadow: 0 12px 32px #153c5009;
 }
 html, body { min-width: 0; min-height: 100%; }
@@ -111,6 +117,13 @@ main {
   line-height: 1.15;
   letter-spacing: -.035em;
 }
+main > .carousel {
+  background: linear-gradient(180deg, var(--brand-red-wash), #fff 38%, var(--brand-teal-wash));
+}
+main > .carousel::before {
+  color: var(--brand-navy);
+  background: linear-gradient(100deg, #fff 0%, var(--brand-red-wash) 58%, var(--brand-teal-wash));
+}
 .carousel-slide { position: relative; grid-area: 2 / 1; justify-self: center; width: fit-content; max-width: 100%; min-width: 0; }
 .carousel-slide > img { display: block; width: auto; max-width: 100%; height: auto; max-height: calc(100svh - 290px); object-fit: contain; min-height: 0; }
 .previous, .next {
@@ -142,6 +155,10 @@ main {
 .dots .selected { background: var(--accent); border-color: var(--accent); }
 .dots .pause { color: var(--text); }
 .dots .pause:hover { background: var(--active-bg); }
+main > .carousel .dots { border-color: #218b7b66; }
+main > .carousel .dots .selected { background: var(--brand-red); border-color: var(--brand-red); }
+main > .carousel .previous, main > .carousel .next { border-color: #218b7b80; color: var(--brand-navy); }
+main > .carousel .previous:hover, main > .carousel .next:hover { background: var(--brand-teal-wash); color: var(--brand-red); }
 .panel { background: var(--surface); border: 0; border-radius: 0; margin: 0; box-shadow: none; min-height: calc(100svh - 146px); }
 h1 {
   padding: clamp(16px, 2vw, 28px) clamp(24px, 4vw, 64px) 16px;
@@ -161,6 +178,30 @@ h1 {
 .split ul { padding-left: 22px; }
 .decoration { border-radius: 0 0 12px 12px; }
 .catalog { width: min(555px, calc(100% - 64px)); margin: 32px auto; border: 1px solid var(--border); border-radius: 16px; }
+.panel:has(.split) h1 {
+  color: var(--brand-navy);
+}
+.panel:has(.split) .split article {
+  border-radius: 0 18px 18px 0;
+  background: linear-gradient(110deg, var(--brand-teal-wash), #fff 94%);
+}
+.panel:has(.split) .split h2 { color: var(--brand-navy); }
+.panel:has(.split) .split article > img:not(.decoration) {
+  box-shadow: 0 8px 24px #11123f1a;
+}
+.panel:has(.catalog) {
+  background: var(--surface);
+}
+.panel:has(.catalog) h1 {
+  color: var(--brand-navy);
+}
+.panel:has(.catalog) .catalog {
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #218b7b80, 0 8px 18px #11123f1a, 0 0 36px 8px #11123f30;
+}
+.panel:has(.catalog) .notice {
+  background: var(--brand-teal-wash);
+}
 .account {
   min-height: max(550px, calc(100svh - 260px));
   justify-items: end;
