@@ -13,10 +13,138 @@ class Rules {}
 @Component({standalone:true,template:`<section class="panel"><h1>Catálogos</h1><img class="catalog" src="assets/CATALOGO_DE_PREMIOS_LCM_555X600.jpg" alt="Catálogo de premios Laboratorios Centro Médico"><p class="notice" role="status">La portada está disponible. El servidor original no entregó las páginas de premios; el catálogo completo está pendiente de integración.</p></section>`})
 class Catalog {}
 
-@Component({standalone:true,imports:[FormsModule],template:`<section class="panel"><h1>Mi cuenta</h1><div class="account"><form (ngSubmit)="submit()"><h2>Por favor, regístrate</h2><label for="user">Nombre de usuario</label><input id="user" name="user" [(ngModel)]="user" maxlength="48" autocomplete="username" required><label for="password">Contraseña</label><input id="password" name="password" [(ngModel)]="password" type="password" maxlength="17" autocomplete="current-password" required><button class="primary" [disabled]="busy">{{busy?'Cargando…':'Enviar'}}</button><p role="status">{{message()}}</p></form></div></section>`})
-class Account {user='';password='';busy=false;message=signal('');async submit(){this.busy=true;try{const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:this.user,password:this.password})});const data=await res.json();this.message.set(data.message)}catch{this.message.set('No se pudo contactar con el servidor. Intenta nuevamente.')}finally{this.password='';this.busy=false}}}
+type AccountSection='inicio'|'referidos'|'movimientos'|'perfil'|'password'|'establecimientos'|'premios'|'disponibilidad';
+type DemoMovement={code:string;activity:string;date:string;status:string};
+@Component({standalone:true,imports:[RouterLink],template:`
+<section class="panel account-panel">
+  <h1>Mi cuenta</h1>
+  <div class="account-dashboard">
+    <aside class="account-sidebar" aria-label="Secciones de la cuenta">
+      <button class="account-menu-toggle" type="button" aria-controls="account-menu" [attr.aria-expanded]="accountMenuOpen()" (click)="toggleAccountMenu()">
+        <span>{{activeSectionLabel()}}</span><span class="account-menu-chevron" aria-hidden="true"></span>
+      </button>
+      <nav id="account-menu" class="account-menu" aria-label="Menú de cuenta" [class.account-menu-open]="accountMenuOpen()">
+        @for(item of sections;track item.id){
+          <button type="button" [class.active]="activeSection()===item.id" [attr.aria-current]="activeSection()===item.id?'page':null" (click)="openSection(item.id)">{{item.label}}</button>
+        }
+      </nav>
+    </aside>
+    <div class="account-workspace">
+      <div class="account-demo-banner" role="status">
+        <strong>Modo demostración</strong>
+        <span>Todos los datos son ficticios; no corresponden a clientes ni movimientos reales de Laboratorios Centro Médico.</span>
+      </div>
+      @switch(activeSection()){
+        @case('inicio'){
+          <section class="account-balance" aria-label="Resumen de demostración">
+            <div>
+              <p class="account-eyebrow">Programa de referidos + AMIGOS</p>
+              <h2>Resumen de referidos</h2>
+              <p>Una vista de ejemplo de tu actividad en el programa.</p>
+            </div>
+            <div class="account-balance-value"><strong>12</strong><span>referidos de ejemplo</span></div>
+          </section>
+          <div class="account-summary-grid">
+            <article class="account-summary-card"><span>Premios de muestra</span><strong>2</strong><small>Solo para ilustrar el diseño</small></article>
+            <article class="account-summary-card"><span>Última actividad</span><strong>28 oct 2026</strong><small>Fecha de ejemplo</small></article>
+          </div>
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Resumen</p><h2>Hola, Usuario de muestra</h2></div></div>
+            <h3>Datos de la cuenta de ejemplo</h3>
+            <dl class="account-details">
+              <div><dt>Correo electrónico</dt><dd>demo@example.com</dd></div>
+              <div><dt>Teléfono</dt><dd>0000-0000</dd></div>
+              <div><dt>Dirección</dt><dd>Dirección de demostración</dd></div>
+              <div><dt>Código de participante</dt><dd>DEMO-0000</dd></div>
+            </dl>
+          </section>
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Actividad de muestra</p><h2>Movimientos recientes</h2></div><button class="account-text-button" type="button" (click)="openSection('movimientos')">Ver todos</button></div>
+            <div class="account-table-wrap"><table class="account-table"><thead><tr><th>Código</th><th>Actividad</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>@for(movement of movements.slice(0,3);track movement.code){<tr><td>{{movement.code}}</td><td>{{movement.activity}}</td><td>{{movement.date}}</td><td>{{movement.status}}</td></tr>}</tbody></table></div>
+          </section>
+        }
+        @case('referidos'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Programa + AMIGOS</p><h2>Mis referidos de ejemplo</h2></div></div>
+            <p>Esta lista es ficticia y solo muestra cómo podría verse la sección. Los referidos reales requieren conectar el servicio de cuentas de LCM.</p>
+            <div class="account-table-wrap"><table class="account-table"><thead><tr><th>Código</th><th>Referencia</th><th>Fecha</th><th>Estado</th></tr></thead><tbody><tr><td>REF-DEMO-01</td><td>Participante de muestra A</td><td>2026-10-28</td><td>Ejemplo</td></tr><tr><td>REF-DEMO-02</td><td>Participante de muestra B</td><td>2026-10-12</td><td>Ejemplo</td></tr><tr><td>REF-DEMO-03</td><td>Participante de muestra C</td><td>2026-09-30</td><td>Ejemplo</td></tr></tbody></table></div>
+          </section>
+        }
+        @case('movimientos'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Actividad</p><h2>Movimientos de ejemplo</h2></div></div>
+            <p>El historial real y sus filtros requieren consultar los movimientos de una cuenta. Aquí solo se muestran registros ficticios para ilustrar el diseño.</p>
+            <div class="account-filter"><label>Desde<input type="date" disabled></label><label>Hasta<input type="date" disabled></label><button class="primary" type="button" disabled>Filtrar</button></div>
+            <div class="account-table-wrap"><table class="account-table"><thead><tr><th>Código</th><th>Actividad</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>@for(movement of movements;track movement.code){<tr><td>{{movement.code}}</td><td>{{movement.activity}}</td><td>{{movement.date}}</td><td>{{movement.status}}</td></tr>}</tbody></table></div>
+          </section>
+        }
+        @case('perfil'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Perfil</p><h2>Actualizar datos</h2></div></div>
+            <p>La edición está deshabilitada porque esta vista no guarda cambios ni está conectada a un perfil de cliente.</p>
+            <div class="account-form-grid"><label>Nombre<input value="Usuario de muestra" disabled></label><label>Apellido<input value="Ejemplo" disabled></label><label>Dirección<input value="Dirección de demostración" disabled></label><label>Teléfono<input value="0000-0000" disabled></label><label>Correo electrónico<input value="demo@example.com" disabled></label></div>
+            <button class="primary account-action" type="button" disabled>Guardar cambios</button>
+          </section>
+        }
+        @case('password'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Seguridad</p><h2>Cambiar contraseña</h2></div></div>
+            <p>No se puede cambiar una contraseña desde esta vista: LCM aún no tiene conectado un servicio de autenticación. No introduzcas aquí una contraseña real.</p>
+            <div class="account-form-grid"><label>Contraseña anterior<input type="password" disabled></label><label>Nueva contraseña<input type="password" disabled></label><label>Confirmar contraseña<input type="password" disabled></label></div>
+            <button class="primary account-action" type="button" disabled>Guardar</button>
+          </section>
+        }
+        @case('establecimientos'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Laboratorios Centro Médico</p><h2>Establecimientos</h2></div></div>
+            <p>El directorio de establecimientos participantes requiere información confirmada de LCM. No se muestran ubicaciones ficticias como si fueran reales.</p>
+            <p class="account-unavailable">Directorio no disponible en esta vista.</p>
+          </section>
+        }
+        @case('premios'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Programa + AMIGOS</p><h2>Premios</h2></div></div>
+            <p>Los premios, requisitos y canjes reales requieren conectar las reglas del programa y el servicio de cuentas. Las cantidades de ejemplo de esta vista no representan beneficios disponibles.</p>
+            <a class="account-catalog-link" routerLink="/catalogos">Consultar el catálogo de premios</a>
+          </section>
+        }
+        @case('disponibilidad'){
+          <section class="account-card">
+            <div class="account-card-heading"><div><p class="account-eyebrow">Sobre esta sección</p><h2>¿Por qué estas opciones no están disponibles?</h2></div></div>
+            <p>Esta aplicación no tiene autenticación ni base de datos de clientes conectadas. Estas vistas permiten revisar la interfaz, no consultar ni modificar información real.</p>
+            <ul class="account-availability-list"><li><strong>Inicio de sesión:</strong> no se puede validar una cuenta; aquí no se envían ni almacenan credenciales.</li><li><strong>Perfil y contraseña:</strong> requieren un servicio seguro para leer y guardar datos personales.</li><li><strong>Referidos, movimientos y premios:</strong> requieren consultar el sistema real del programa + AMIGOS.</li><li><strong>Establecimientos:</strong> requieren información confirmada de Laboratorios Centro Médico.</li></ul>
+            <p>Los datos visibles son solo de ejemplo.</p>
+          </section>
+        }
+      }
+    </div>
+  </div>
+</section>`})
+class Account {
+  activeSection=signal<AccountSection>('inicio');
+  accountMenuOpen=signal(false);
+  sections:{id:AccountSection;label:string}[]=[
+    {id:'inicio',label:'Inicio'},
+    {id:'referidos',label:'Mis referidos'},
+    {id:'movimientos',label:'Mis movimientos'},
+    {id:'perfil',label:'Actualizar datos'},
+    {id:'password',label:'Cambiar contraseña'},
+    {id:'establecimientos',label:'Establecimientos'},
+    {id:'premios',label:'Premios'},
+    {id:'disponibilidad',label:'Disponibilidad'}
+  ];
+  movements:DemoMovement[]=[
+    {code:'DEMO-1042',activity:'Referido registrado (ejemplo)',date:'2026-10-28',status:'Ejemplo'},
+    {code:'DEMO-1038',activity:'Referido registrado (ejemplo)',date:'2026-10-12',status:'Ejemplo'},
+    {code:'DEMO-1021',activity:'Premio de muestra',date:'2026-09-30',status:'Ejemplo'},
+    {code:'DEMO-1007',activity:'Referido registrado (ejemplo)',date:'2026-09-14',status:'Ejemplo'}
+  ];
+  activeSectionLabel(){return this.sections.find(item=>item.id===this.activeSection())?.label??'Inicio'}
+  toggleAccountMenu(){this.accountMenuOpen.update(open=>!open)}
+  openSection(section:AccountSection){this.activeSection.set(section);this.accountMenuOpen.set(false)}
+}
 @Component({standalone:true,imports:[FormsModule],template:`<section class="panel"><h1>Registrarse</h1><div class="registration"><form><label for="names">*Nombres</label><input id="names" maxlength="25" autocomplete="given-name" required><label for="surname">*Apellidos</label><input id="surname" maxlength="25" autocomplete="family-name" required><label for="phone">Teléfono</label><input id="phone" maxlength="8" type="tel" autocomplete="tel"><label for="email">*Correo electrónico</label><input id="email" type="email" maxlength="50" autocomplete="email" required><label for="identity">*N.? de documento de identidad</label><input id="identity" maxlength="13" required><fieldset><legend>*Género</legend><label><input type="radio" name="gender" value="Femenino" checked> Femenino</label><label><input type="radio" name="gender" value="Masculino"> Masculino</label></fieldset><label for="birth">Fecha de nacimiento</label><input id="birth" type="date" autocomplete="bday"><label for="department">*Departamento</label><select id="department" disabled><option>Seleccione:</option></select><p class="notice" role="status">El registro está temporalmente fuera de servicio. No se pudo recuperar la lista de departamentos ni el proceso de inscripción del servidor original. Puedes inscribirte de manera presencial.</p><button class="primary" type="button" disabled>Registro no disponible</button></form></div></section>`})
 class Register {}
-@Component({selector:'app-root',standalone:true,imports:[RouterOutlet,RouterLink,RouterLinkActive],template:`<a class="skip" href="#contenido">Saltar al contenido</a><div class="shell"><div class="top"><span>.:: Cliente Referido + AMIGOS ::. | 3.1.25 | <a routerLink="/cuenta">Iniciar sesión</a></span></div><header><a routerLink="/" class="logo"><img src="assets/logo.png" alt="Laboratorios Centro Médico — Inicio"></a><nav id="navigation" aria-label="Navegación principal">@for(item of links;track item.path){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" ariaCurrentWhenActive="page" [attr.aria-label]="item.label"><span class="nav-icon" aria-hidden="true">@switch(item.path){@case('/'){<svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5.5 9v12h13V9M9 21v-7h6v7"/></svg>}@case('/acerca'){<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>}@case('/reglamento'){<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7m-7 4h7"/></svg>}@case('/catalogos'){<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>}@case('/cuenta'){<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}@case('/registro'){<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0m4-11v8m-4-4h8"/></svg>}}</span><span class="nav-label">{{item.label}}</span></a>}</nav></header><main id="contenido" tabindex="-1"><router-outlet /></main><footer><p>© Laboratorios Centro Médico 2020</p><img src="assets/DATACODE.png" alt="DATACODE"></footer></div>`})
+@Component({selector:'app-root',standalone:true,imports:[RouterOutlet,RouterLink,RouterLinkActive],template:`<a class="skip" href="#contenido">Saltar al contenido</a><div class="shell"><div class="top"><span>.:: Cliente Referido + AMIGOS ::. | 3.1.25 | <a routerLink="/cuenta">Mi cuenta</a></span></div><header><a routerLink="/" class="logo"><img src="assets/logo.png" alt="Laboratorios Centro Médico — Inicio"></a><nav id="navigation" aria-label="Navegación principal">@for(item of links;track item.path){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" ariaCurrentWhenActive="page" [attr.aria-label]="item.label"><span class="nav-icon" aria-hidden="true">@switch(item.path){@case('/'){<svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5.5 9v12h13V9M9 21v-7h6v7"/></svg>}@case('/acerca'){<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>}@case('/reglamento'){<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7m-7 4h7"/></svg>}@case('/catalogos'){<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>}@case('/cuenta'){<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>}@case('/registro'){<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0m4-11v8m-4-4h8"/></svg>}}</span><span class="nav-label">{{item.label}}</span></a>}</nav></header><main id="contenido" tabindex="-1"><router-outlet /></main><footer><p>© Laboratorios Centro Médico 2020</p><img src="assets/DATACODE.png" alt="DATACODE"></footer></div>`})
 class App {links=[{path:'/',label:'Inicio'},{path:'/acerca',label:'Acerca de'},{path:'/reglamento',label:'Reglamento'},{path:'/catalogos',label:'Catálogos'},{path:'/cuenta',label:'Mi cuenta'},{path:'/registro',label:'Registrarse'}]}
 bootstrapApplication(App,{providers:[provideRouter([{path:'',component:Home},{path:'acerca',component:About},{path:'reglamento',component:Rules},{path:'catalogos',component:Catalog},{path:'cuenta',component:Account},{path:'registro',component:Register},{path:'**',redirectTo:''}])]}).catch(console.error);
